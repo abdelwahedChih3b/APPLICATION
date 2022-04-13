@@ -6,6 +6,10 @@
 # In[1]:
 
 
+from calendar import c
+from ctypes.wintypes import LONG
+from pickletools import long1
+from subprocess import CalledProcessError
 import numpy as np
 import pandas as pd
 from openpyxl import load_workbook
@@ -61,8 +65,8 @@ PM=np.array([ [1,0,0,0,0,0,1],
 
 
 def POIDLIG(pm,machine,piece):
-    V=np.zeros(machine.shape,dtype=int)
-    S=np.zeros(piece.shape,dtype=int)
+    V=np.zeros(machine.shape)
+    S=np.zeros(piece.shape)
     for i in range(len(machine)):
         V[i]=2**(len(machine)-i-1)
     for i in range(len(piece)):
@@ -95,8 +99,8 @@ def TRIP(PM,P,s):
 
 
 def POIDCOL(pm,machine,piece):
-    W=np.zeros(piece.shape,dtype=int)
-    T=np.zeros(machine.shape,dtype=int)
+    W=np.zeros(piece.shape,dtype=np.longfloat)
+    T=np.zeros(machine.shape,dtype=np.longfloat)
     for i in range(len(piece)):
         W[i]=2**(len(piece)-i-1)
     for i in range(len(machine)):
@@ -159,6 +163,8 @@ def tri_selection(t,t1):
 
 
 def main_king(pm,Machine,Piece):
+    i = 0
+    PM = np.longlong
     PM=pm.copy()
     print("\nMachine : \n",Machine)
     print("\nPiece   : \n",Piece)
@@ -183,10 +189,11 @@ def main_king(pm,Machine,Piece):
         PM=TRIM(PM,Machine,t)
         print("\nPM : \n",PM)
         k2=PM
-        if((k2==k1).all()):
+        if(i > 500):
             print("NO UPDATE!")
             Bool=False
         else:
+            i += 1 
             print("UPDATED!")
             continue
 
@@ -194,6 +201,7 @@ def main_king(pm,Machine,Piece):
 
 
 # In[10]:
+
 
 
 PM1,P1,M1=main_king(PM,Machine,Piece)
