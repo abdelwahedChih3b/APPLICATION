@@ -16,6 +16,10 @@ from openpyxl import load_workbook
 import itertools
 import os
 
+
+from pyparsing import Or
+
+
 # #### Exemple : Atelier de 7 machines pour usiner 8 pieces
 
 # #### Dans cette partie on va importer les données d'un fichier EXEL
@@ -99,8 +103,8 @@ def TRIP(PM,P,s):
 
 
 def POIDCOL(pm,machine,piece):
-    W=np.zeros(piece.shape,dtype=np.longfloat)
-    T=np.zeros(machine.shape,dtype=np.longfloat)
+    W=np.zeros(piece.shape)
+    T=np.zeros(machine.shape)
     for i in range(len(piece)):
         W[i]=2**(len(piece)-i-1)
     for i in range(len(machine)):
@@ -172,31 +176,36 @@ def main_king(pm,Machine,Piece):
     p1=Piece
     m1=Machine
     Bool=True
-    while(Bool):
-        k1=PM
-        print("\nTRI SUR LIGNE\n")
-        #TRI SUR LIGNES
-        s,v=POIDLIG(PM,Machine,Piece)
-        s1,p1=tri_selection(s,p1)
-        print("\nS Trier :",s1,"\nPiece Trier :",p1)
-        PM=TRIP(PM,Piece,s)
-        print("PM :\n",PM)
-        print("\n TRI SUR COLONNE")
-        #TRI SUR COLONNES
-        w,t=POIDCOL(PM,Machine,Piece)
-        t1,m1=tri_selection(t,m1)
-        print("\nT Trier :",t1,"\nMachine Trier :",m1)
-        PM=TRIM(PM,Machine,t)
-        print("\nPM : \n",PM)
-        k2=PM
-        if(i > 500):
-            print("NO UPDATE!")
-            Bool=False
-        else:
-            i += 1 
-            print("UPDATED!")
-            continue
+    try : 
+        while(Bool):
+            i+= 1 
+            k1=PM
+            print("\nTRI SUR LIGNE\n")
+            #TRI SUR LIGNES
+            s,v=POIDLIG(PM,Machine,Piece)
+            s1,p1=tri_selection(s,p1)
+            print("\nS Trier :",s1,"\nPiece Trier :",p1)
+            PM=TRIP(PM,Piece,s)
+            print("PM :\n",PM)
+            print("\n TRI SUR COLONNE")
+            #TRI SUR COLONNES
+            w,t=POIDCOL(PM,Machine,Piece)
+            t1,m1=tri_selection(t,m1)
+            print("\nT Trier :",t1,"\nMachine Trier :",m1)
+            PM=TRIM(PM,Machine,t)
+            print("\nPM : \n",PM)
+            k2=PM
+            
+            if((k1==k2).all()) :
+                print("NO UPDATE!")
+                Bool=False
+            else:
+                
+                print("UPDATED!")
+                continue
 
+    except KeyboardInterrupt:
+        pass
     return PM,p1,m1
 
 
